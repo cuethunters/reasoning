@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reasoning & Aptitude Mock Test - UGC NET</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .option-label:hover { border-color: #0ea5e9; background-color: #f0f9ff; }
+        .option-selected { border-color: #0284c7; background-color: #e0f2fe; box-shadow: 0 0 0 2px #0284c7; }
+        .grid-btn-answered { background-color: #10b981; color: white; border-color: #10b981; }
+        .grid-btn-current { border-color: #0ea5e9; box-shadow: 0 0 0 2px #0ea5e9; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 h-screen flex flex-col overflow-hidden">
+
+    <header class="bg-white shadow-sm z-10 flex-shrink-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-sky-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-md">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <h1 class="font-bold text-xl text-slate-800 hidden sm:block">Reasoning & Aptitude Mock</h1>
+                <h1 class="font-bold text-lg text-slate-800 sm:hidden">Reasoning Mock</h1>
+            </div>
+            <div id="header-timer-container" class="hidden flex items-center gap-2 bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
+                <i class="fa-regular fa-clock text-sky-600"></i>
+                <span id="header-timer" class="font-semibold text-slate-700 tracking-wider">60:00</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow flex overflow-hidden relative">
+        
+        <div id="start-screen" class="absolute inset-0 bg-slate-50 flex items-center justify-center z-20 overflow-y-auto p-4">
+            <div class="bg-white max-w-2xl w-full rounded-2xl shadow-xl p-8 border border-slate-100">
+                <div class="text-center mb-8">
+                    <div class="w-20 h-20 bg-sky-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-puzzle-piece text-4xl text-sky-600"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-slate-800 mb-2">Mathematical & Logical Reasoning</h2>
+                    <p class="text-slate-500">Comprehensive Mock Test for NTA UGC NET JRF (Units V & VI)</p>
+                </div>
+                
+                <div class="bg-slate-50 rounded-xl p-6 mb-8 border border-slate-200">
+                    <h3 class="font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-sky-500"></i> Instructions
+                    </h3>
+                    <ul class="space-y-3 text-sm text-slate-600">
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-check text-green-500 mt-1"></i> This test contains <strong>50 multiple-choice questions</strong> based on Math, Logic, and Indian Logic.</li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-check text-green-500 mt-1"></i> Total time allotted is <strong>60 minutes</strong>.</li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-check text-green-500 mt-1"></i> Detailed <strong>explanations</strong> will be provided at the end of the test.</li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-check text-green-500 mt-1"></i> The test will auto-submit when the timer runs out.</li>
+                    </ul>
+                </div>
+                
+                <button onclick="startTest()" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-4 rounded-xl shadow-lg shadow-sky-200 transition-all transform hover:-translate-y-1 text-lg flex items-center justify-center gap-2">
+                    Start Mock Test <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="quiz-screen" class="hidden w-full h-full flex flex-col md:flex-row">
+            
+            <div class="flex-grow flex flex-col h-full overflow-hidden">
+                <div class="h-1 bg-slate-200 w-full">
+                    <div id="progress-bar" class="h-full bg-sky-500 transition-all duration-300 w-0"></div>
+                </div>
+
+                <div class="flex-grow overflow-y-auto p-4 sm:p-6 lg:p-10 scrollbar-hide">
+                    <div class="max-w-4xl mx-auto">
+                        <div class="flex justify-between items-center mb-6">
+                            <span id="question-number-badge" class="bg-sky-100 text-sky-800 text-sm font-semibold px-3 py-1 rounded-full border border-sky-200">
+                                Question 1 of 50
+                            </span>
+                            <span class="text-sm text-slate-500 font-medium">Marks: +2 / -0</span>
+                        </div>
+                        
+                        <h2 id="question-text" class="text-xl sm:text-2xl font-semibold text-slate-800 mb-8 leading-relaxed whitespace-pre-line">
+                            Loading question...
+                        </h2>
+
+                        <div id="options-container" class="space-y-4">
+                            <!-- Options injected via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white border-t border-slate-200 p-4 sm:p-6 flex items-center justify-between shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+                    <button onclick="prevQuestion()" id="btn-prev" class="px-6 py-2.5 rounded-lg border-2 border-slate-200 text-slate-600 font-medium hover:bg-slate-50 hover:border-slate-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fa-solid fa-angle-left mr-2"></i> Previous
+                    </button>
+                    
+                    <button onclick="nextQuestion()" id="btn-next" class="px-6 py-2.5 rounded-lg bg-sky-600 text-white font-medium hover:bg-sky-700 shadow-md shadow-sky-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        Save & Next <i class="fa-solid fa-angle-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="w-full md:w-80 bg-white border-l border-slate-200 flex flex-col h-64 md:h-full flex-shrink-0 shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.05)] z-10 relative">
+                <div class="p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center md:block md:bg-white">
+                    <h3 class="font-semibold text-slate-700 hidden md:block mb-2">Question Palette</h3>
+                    
+                    <button id="mobile-grid-toggle" class="md:hidden flex items-center gap-2 text-sky-600 font-medium" onclick="toggleMobileGrid()">
+                        <i class="fa-solid fa-table-cells"></i> Show Palette
+                    </button>
+                    
+                    <div class="flex gap-4 text-xs font-medium text-slate-500 md:mt-3">
+                        <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-emerald-500"></span> Answered</div>
+                        <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full border border-slate-300"></span> Unanswered</div>
+                    </div>
+                </div>
+
+                <div id="grid-container" class="flex-grow overflow-y-auto p-4 bg-slate-50 md:bg-white hidden md:block absolute md:relative top-full left-0 w-full md:w-auto h-[300px] md:h-auto border-b md:border-b-0 border-slate-200 shadow-lg md:shadow-none z-20">
+                    <div id="question-grid" class="grid grid-cols-5 gap-2 sm:gap-3">
+                        <!-- Grid buttons injected via JS -->
+                    </div>
+                </div>
+
+                <div class="p-4 border-t border-slate-200 mt-auto bg-white">
+                    <button onclick="confirmSubmit()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg shadow-md shadow-emerald-200 transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-check-double"></i> Submit Final Test
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="results-screen" class="hidden absolute inset-0 bg-slate-50 z-30 overflow-y-auto">
+            <div class="max-w-4xl mx-auto p-4 sm:p-8">
+                <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-8 text-center mb-8 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-2 bg-sky-500"></div>
+                    <h2 class="text-3xl font-bold text-slate-800 mb-2">Test Completed!</h2>
+                    <p class="text-slate-500 mb-6">Here is your detailed performance analysis.</p>
+                    
+                    <div class="flex flex-wrap justify-center gap-6 sm:gap-12">
+                        <div class="flex flex-col items-center">
+                            <div class="w-24 h-24 rounded-full border-4 border-sky-100 flex items-center justify-center mb-2">
+                                <span id="score-text" class="text-3xl font-bold text-sky-600">0</span>
+                            </div>
+                            <span class="text-sm font-medium text-slate-600">Total Score (Out of 100)</span>
+                        </div>
+                        
+                        <div class="flex flex-col justify-center gap-4 text-left border-l border-slate-200 pl-6 sm:pl-12">
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded bg-emerald-100 text-emerald-600 flex items-center justify-center"><i class="fa-solid fa-check"></i></span>
+                                <div>
+                                    <div id="correct-count" class="font-bold text-slate-800 text-lg">0</div>
+                                    <div class="text-xs text-slate-500 uppercase tracking-wide">Correct</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></span>
+                                <div>
+                                    <div id="incorrect-count" class="font-bold text-slate-800 text-lg">0</div>
+                                    <div class="text-xs text-slate-500 uppercase tracking-wide">Incorrect</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded bg-slate-100 text-slate-600 flex items-center justify-center"><i class="fa-solid fa-minus"></i></span>
+                                <div>
+                                    <div id="skipped-count" class="font-bold text-slate-800 text-lg">0</div>
+                                    <div class="text-xs text-slate-500 uppercase tracking-wide">Skipped</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-book-open text-sky-500"></i> Detailed Review & Explanations
+                </h3>
+                <div id="review-container" class="space-y-6">
+                    <!-- Review cards injected via JS -->
+                </div>
+                
+                <div class="mt-12 text-center pb-12">
+                    <button onclick="location.reload()" class="px-8 py-3 bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-700 shadow-lg shadow-sky-200 transition-all">
+                        Take Test Again
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="custom-modal" class="hidden absolute inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 transform transition-all scale-95 opacity-0" id="modal-content">
+                <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-4 text-xl">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h3 class="text-xl font-bold text-center text-slate-800 mb-2" id="modal-title">Confirm Submit</h3>
+                <p class="text-center text-slate-500 mb-6" id="modal-desc">Are you sure you want to submit the test?</p>
+                <div class="flex gap-3">
+                    <button onclick="closeModal()" class="flex-1 py-2.5 rounded-lg border border-slate-300 text-slate-700 font-medium hover:bg-slate-50">Cancel</button>
+                    <button onclick="executeSubmit()" class="flex-1 py-2.5 rounded-lg bg-sky-600 text-white font-medium hover:bg-sky-700 shadow-md">Submit Test</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const quizData = [
+            {
+                q: "Find the next number in the series: 2, 5, 10, 17, 26, ?",
+                options: ["33", "35", "37", "39"],
+                ans: 2,
+                explanation: "The differences between consecutive numbers are consecutive odd numbers: +3, +5, +7, +9. The next difference should be +11. So, 26 + 11 = 37."
+            },
+            {
+                q: "Find the next number in the series: 1, 8, 27, 64, ?",
+                options: ["120", "125", "128", "131"],
+                ans: 1,
+                explanation: "The series consists of cubes of natural numbers: 1³, 2³, 3³, 4³. The next number is 5³ = 125."
+            },
+            {
+                q: "Find the next number in the series: 3, 12, 27, 48, 75, ?",
+                options: ["92", "98", "104", "108"],
+                ans: 3,
+                explanation: "The pattern is 3 × 1², 3 × 2², 3 × 3², 3 × 4², 3 × 5². The next term is 3 × 6² = 3 × 36 = 108."
+            },
+            {
+                q: "Find the next number in the series: 11, 13, 17, 19, 23, 29, ?",
+                options: ["31", "33", "35", "37"],
+                ans: 0,
+                explanation: "The series consists of consecutive prime numbers starting from 11. The prime number immediately following 29 is 31."
+            },
+            {
+                q: "Find the next letter in the series: A, C, F, J, O, ?",
+                options: ["U", "V", "W", "T"],
+                ans: 0,
+                explanation: "The alphabetical distance between the letters increases progressively: A(+2)C, C(+3)F, F(+4)J, J(+5)O. The next step is O(+6) = U."
+            },
+            {
+                q: "Find the next letter in the series: Z, X, V, T, R, ?",
+                options: ["O", "P", "Q", "S"],
+                ans: 1,
+                explanation: "The letters are moving backward by 2 steps in the English alphabet: Z(-2)X, X(-2)V, V(-2)T, T(-2)R. Therefore, R(-2) = P."
+            },
+            {
+                q: "Find the missing term in the letter series: BDF, HJL, NPR, ?",
+                options: ["SUW", "TVX", "OQS", "UWY"],
+                ans: 1,
+                explanation: "The first letters follow the pattern B(+6)H, H(+6)N, N(+6)T. So the word starts with T. Similarly, the other letters shift by +6. Hence, TVX."
+            },
+            {
+                q: "Find the next number in the series: 5, 11, 23, 47, 95, ?",
+                options: ["190", "191", "192", "193"],
+                ans: 1,
+                explanation: "The pattern is (previous number × 2) + 1. So, 5×2+1=11, 11×2+1=23, 23×2+1=47, 47×2+1=95. The next number is 95×2+1 = 191."
+            },
+            {
+                q: "Find the next term in the series: QAR, RAS, SAT, TAU, ?",
+                options: ["UAV", "UAS", "VAT", "UAT"],
+                ans: 0,
+                explanation: "The first letter follows Q-R-S-T-U. The middle letter is always A. The third letter follows R-S-T-U-V. Therefore, the next term is UAV."
+            },
+            {
+                q: "Find the next number in the alternating series: 8, 24, 12, 36, 18, 54, ?",
+                options: ["27", "28", "68", "72"],
+                ans: 0,
+                explanation: "The pattern alternately multiplies by 3 and divides by 2: 8×3=24, 24÷2=12, 12×3=36, 36÷2=18, 18×3=54. The next operation is 54÷2 = 27."
+            },
+            {
+                q: "In a certain code, 'APPLE' is written as 'EPPLA'. How will 'ORANGE' be written in that code?",
+                options: ["EGNARO", "EGNAOR", "ROANGE", "EGNRAO"],
+                ans: 0,
+                explanation: "The letters of the word are simply reversed. APPLE becomes EPPLA. Reversing ORANGE gives EGNARO."
+            },
+            {
+                q: "If 'CAT' is coded as 24 and 'DOG' is coded as 26, how will 'BIRD' be coded?",
+                options: ["30", "31", "32", "33"],
+                ans: 3,
+                explanation: "The code is the sum of the alphabetical positions of the letters. B(2) + I(9) + R(18) + D(4) = 33."
+            },
+            {
+                q: "If 'MIND' is coded as 'KGLB', how will 'DIAGRAM' be coded?",
+                options: ["BGYEPYK", "BGYFPYK", "CHZESZL", "BGXEPXK"],
+                ans: 0,
+                explanation: "Each letter in the word is shifted backward by 2 places (-2). D(-2)=B, I(-2)=G, A(-2)=Y (wrapping around), G(-2)=E, R(-2)=P, A(-2)=Y, M(-2)=K. Result: BGYEPYK."
+            },
+            {
+                q: "In a certain code, 'WATER' is written as 'YCVGT'. How is 'FIRE' written in that code?",
+                options: ["DGPC", "HKTG", "EHQD", "HLUH"],
+                ans: 1,
+                explanation: "Each letter is shifted forward by 2 places (+2). F(+2)=H, I(+2)=K, R(+2)=T, E(+2)=G. Therefore, FIRE becomes HKTG."
+            },
+            {
+                q: "If ROSE is coded as 6821, CHAIR is 73456, and PREACH is 961473, what will be the code for SEARCH?",
+                options: ["214673", "214763", "216473", "241673"],
+                ans: 0,
+                explanation: "This is a direct substitution coding. Looking at the knowns: S=2, E=1, A=4, R=6, C=7, H=3. Substituting these into SEARCH gives 214673."
+            },
+            {
+                q: "If Red is called Blue, Blue is called Green, Green is called Yellow, and Yellow is called Pink, what is the color of clear sky?",
+                options: ["Red", "Blue", "Green", "Yellow"],
+                ans: 2,
+                explanation: "The color of a clear sky is Blue. According to the given code, Blue is called Green. Therefore, the answer is Green."
+            },
+            {
+                q: "In a certain code language, '256' means 'you are good', '637' means 'we are bad', and '358' means 'good and bad'. Which digit stands for 'and'?",
+                options: ["3", "5", "6", "8"],
+                ans: 3,
+                explanation: "From '256' and '358', 'good' is common, so 'good' = 5. From '637' and '358', 'bad' is common, so 'bad' = 3. In '358', 3 and 5 are 'bad' and 'good', leaving '8' for 'and'."
+            },
+            {
+                q: "If 'PENCIL' is coded as 'QFODJM', how will 'PAPER' be coded?",
+                options: ["QBQFS", "QZODQ", "QBQFR", "QZOFQ"],
+                ans: 0,
+                explanation: "Each letter is shifted forward by 1 place (+1). P(+1)=Q, A(+1)=B, P(+1)=Q, E(+1)=F, R(+1)=S. So, PAPER becomes QBQFS."
+            },
+            {
+                q: "If 'GO' = 32 and 'SHE' = 49, what will be the code for 'SOME'?",
+                options: ["56", "58", "62", "64"],
+                ans: 0,
+                explanation: "The code is the sum of the reverse alphabetical positions (Z=1, A=26). G(20) + O(12) = 32. S(8) + H(19) + E(22) = 49. S(8) + O(12) + M(14) + E(22) = 56."
+            },
+            {
+                q: "If 'MACHINE' is coded as 19-7-9-14-15-20-11, how will you code 'DANGER'?",
+                options: ["10-7-20-13-11-24", "11-7-20-16-11-24", "13-7-20-9-11-25", "10-7-20-14-11-24"],
+                ans: 0,
+                explanation: "Each letter's standard alphabetical position is increased by 6. M(13)+6=19, A(1)+6=7. For DANGER: D(4)+6=10, A(1)+6=7, N(14)+6=20, G(7)+6=13, E(5)+6=11, R(18)+6=24. Result: 10-7-20-13-11-24."
+            },
+            {
+                q: "Pointing to a man, a woman said, 'His mother is the only daughter of my mother.' How is the woman related to the man?",
+                options: ["Aunt", "Daughter", "Sister", "Mother"],
+                ans: 3,
+                explanation: "'The only daughter of my mother' refers to the woman herself. Therefore, the woman is saying 'His mother is me.' So, the woman is the mother of the man."
+            },
+            {
+                q: "A is the brother of B. B is the brother of C. C is the husband of D. E is the father of A. How is D related to E?",
+                options: ["Daughter", "Daughter-in-law", "Sister-in-law", "Niece"],
+                ans: 1,
+                explanation: "A, B, and C are brothers, and E is their father. C is E's son. Since D is C's wife, D is the daughter-in-law of E."
+            },
+            {
+                q: "Pointing to a photograph, a person says, 'I have no brother or sister, but that man's father is my father's son.' Whose photograph was it?",
+                options: ["His own", "His father's", "His son's", "His grandfather's"],
+                ans: 2,
+                explanation: "Since the speaker has no siblings, 'my father's son' is the speaker himself. Thus, the statement translates to 'that man's father is me.' Therefore, the photograph is of his son."
+            },
+            {
+                q: "A man said to a lady, 'Your mother's husband's sister is my aunt.' How is the lady related to the man?",
+                options: ["Mother", "Aunt", "Sister", "Cousin"],
+                ans: 2,
+                explanation: "'Your mother's husband' is the lady's father. The father's sister is the lady's aunt. If the lady's aunt is also the man's aunt, they must be siblings (brother and sister)."
+            },
+            {
+                q: "A is the uncle of B, who is the daughter of C, and C is the daughter-in-law of P. How is A related to P?",
+                options: ["Brother", "Son", "Son-in-law", "Data inadequate"],
+                ans: 1,
+                explanation: "C is the daughter-in-law of P, meaning C is married to P's son. B is C's daughter. A is B's uncle. For A to be the paternal uncle, A must be the brother of C's husband, making A the son of P."
+            },
+            {
+                q: "X and Y are brothers. R is the father of Y. S is the brother of T and maternal uncle of X. How is T related to R?",
+                options: ["Mother", "Wife", "Sister", "Daughter"],
+                ans: 1,
+                explanation: "Since R is the father of Y, he is also the father of X. S is the maternal uncle of X, meaning S is the brother of X's mother. Since S is T's brother, T must be X's mother. Therefore, T is R's wife."
+            },
+            {
+                q: "Introducing a boy, a girl said, 'He is the son of the daughter of the father of my uncle.' How is the boy related to the girl?",
+                options: ["Brother", "Nephew", "Uncle", "Cousin"],
+                ans: 0,
+                explanation: "The 'father of my uncle' is the girl's grandfather. The 'daughter of the grandfather' is the girl's mother or aunt. If she is the mother, the boy is the girl's brother. (Brother is the most direct logical assumption here)."
+            },
+            {
+                q: "If P$Q means P is the father of Q, and P#Q means P is the mother of Q. Which of the following shows that A is the grandmother of C?",
+                options: ["A$B#C", "A#B$C", "A#B#C", "Both B and C are correct"],
+                ans: 3,
+                explanation: "A#B means A is the mother of B. If B is either the father ($C) or mother (#C) of C, then A will be the grandmother of C. Therefore, both A#B$C and A#B#C are correct representations."
+            },
+            {
+                q: "A man walks 5 km towards South, then turns to his right and walks 3 km. He then turns to his left and walks 5 km. In which direction is he now with respect to his starting point?",
+                options: ["South", "South-West", "South-East", "West"],
+                ans: 1,
+                explanation: "He goes South (5km), turns right (faces West) and walks 3km. Then turns left (faces South) and walks 5km. His final position is South and West of his starting point, i.e., South-West."
+            },
+            {
+                q: "I am facing East. I turn 100 degrees in the clockwise direction and then 145 degrees in the anti-clockwise direction. Which direction am I facing now?",
+                options: ["East", "North-East", "North", "South-West"],
+                ans: 1,
+                explanation: "Net turn = 145 degrees (anti-clockwise) - 100 degrees (clockwise) = 45 degrees anti-clockwise. Starting from East, a 45-degree anti-clockwise turn points to North-East."
+            },
+            {
+                q: "A boy rides his bicycle Northwards, then turns left and rides 1 km, and again turns left and rides 2 km. He found himself exactly 1 km West of his starting point. How far did he ride Northwards initially?",
+                options: ["1 km", "2 km", "3 km", "5 km"],
+                ans: 1,
+                explanation: "He travels North (distance unknown, let's call it x). Turns left (West) for 1km. Turns left (South) for 2km. If he is 1km West of start, his North and South travels must cancel out. Thus, x = 2km."
+            },
+            {
+                q: "One morning after sunrise, Vimal started to walk. His shadow fell exactly to his right. Which direction was he facing?",
+                options: ["North", "South", "East", "West"],
+                ans: 1,
+                explanation: "In the morning, the sun is in the East, so shadows fall towards the West. If the shadow (West) is to his right, he must be facing South."
+            },
+            {
+                q: "K is 40m South-West of L. M is 40m South-East of L. M is in which direction of K?",
+                options: ["East", "West", "North", "South"],
+                ans: 0,
+                explanation: "If you draw it out, L is at the top. K is down and to the left (SW). M is down and to the right (SE) at the same horizontal level. Therefore, M is exactly to the East of K."
+            },
+            {
+                q: "A person travels 10 km North, turns and travels 6 km South, then turns and travels 3 km East. How far and in which direction is he from his starting point?",
+                options: ["5 km North-East", "5 km North-West", "7 km North-East", "7 km East"],
+                ans: 0,
+                explanation: "Net vertical distance = 10km North - 6km South = 4km North. Horizontal distance = 3km East. Using Pythagoras theorem, distance = √(4² + 3²) = √(16+9) = √25 = 5km. Direction is North-East."
+            },
+            {
+                q: "Village Q is to the North of village P. Village R is in the East of Village Q. Village S is to the West of village P. In which direction is S with respect to R?",
+                options: ["South-West", "South-East", "North-West", "North-East"],
+                ans: 0,
+                explanation: "R is North-East of P. S is West of P. Looking from R towards S, you have to look downwards (South) and leftwards (West). Therefore, S is South-West of R."
+            },
+            {
+                q: "A rat runs 20 feet towards East and turns to right, runs 10 feet and turns to right, runs 9 feet and again turns to left, runs 5 feet and then turns to left, runs 12 feet and finally turns to left and runs 6 feet. Which direction is the rat facing?",
+                options: ["East", "West", "North", "South"],
+                ans: 2,
+                explanation: "Tracing the turns: Start East. Right = South. Right = West. Left = South. Left = East. Left = North. The rat is ultimately facing North."
+            },
+            {
+                q: "What is the angle between the minute hand and the hour hand of a clock at 3:40?",
+                options: ["120 degrees", "125 degrees", "130 degrees", "140 degrees"],
+                ans: 2,
+                explanation: "Formula: |30H - 5.5M|. Angle = |30(3) - 5.5(40)| = |90 - 220| = |-130| = 130 degrees."
+            },
+            {
+                q: "How many times do the hands of a clock coincide (overlap) in a single day (24 hours)?",
+                options: ["20", "22", "24", "44"],
+                ans: 1,
+                explanation: "The hands coincide 11 times in 12 hours (they skip the overlap between 11 and 1, only overlapping at exactly 12:00). So, in 24 hours, they overlap 22 times."
+            },
+            {
+                q: "A clock is started at noon. By 10 minutes past 5, the hour hand has turned through how many degrees?",
+                options: ["145 degrees", "150 degrees", "155 degrees", "160 degrees"],
+                ans: 2,
+                explanation: "The hour hand moves 30 degrees per hour and 0.5 degrees per minute. From 12:00 to 5:10 is 5 hours and 10 minutes. Degrees = (5 × 30) + (10 × 0.5) = 150 + 5 = 155 degrees."
+            },
+            {
+                q: "What is the angle between the hour hand and minute hand at 8:20?",
+                options: ["110 degrees", "120 degrees", "130 degrees", "140 degrees"],
+                ans: 2,
+                explanation: "Formula: |30H - 5.5M|. Angle = |30(8) - 5.5(20)| = |240 - 110| = 130 degrees."
+            },
+            {
+                q: "Today is Monday. After 61 days, what will be the day of the week?",
+                options: ["Friday", "Saturday", "Sunday", "Monday"],
+                ans: 1,
+                explanation: "Every 7 days the day repeats. 61 divided by 7 yields a quotient of 8 and a remainder of 5. Monday + 5 days = Saturday."
+            },
+            {
+                q: "If January 1, 2007, was a Monday, what day of the week lay on January 1, 2008?",
+                options: ["Monday", "Tuesday", "Wednesday", "Sunday"],
+                ans: 1,
+                explanation: "2007 is a normal year (365 days), which means it has 1 odd day. Monday + 1 day = Tuesday."
+            },
+            {
+                q: "The calendar for the year 2005 is the exact same as which of the following years?",
+                options: ["2010", "2011", "2012", "2013"],
+                ans: 1,
+                explanation: "2005 is (Leap Year + 1). Years following a leap year repeat their calendar after 6 years. 2005 + 6 = 2011."
+            },
+            {
+                q: "Rohan ranks 7th from the top and 26th from the bottom in his class. How many students are there in the class?",
+                options: ["31", "32", "33", "34"],
+                ans: 1,
+                explanation: "Total = (Position from top + Position from bottom) - 1. Total = (7 + 26) - 1 = 33 - 1 = 32 students."
+            },
+            {
+                q: "In a row of boys, A is 10th from the left and B is 9th from the right. If they interchange their positions, A becomes 15th from the left. How many boys are there in the row?",
+                options: ["23", "24", "27", "28"],
+                ans: 0,
+                explanation: "A's new position is 15th from the left. This position is the same as B's old position, which is 9th from the right. Total = (Left + Right) - 1 = (15 + 9) - 1 = 23."
+            },
+            {
+                q: "Sam ranked 9th from the top and 38th from the bottom in a test. How many students took the test?",
+                options: ["45", "46", "47", "48"],
+                ans: 1,
+                explanation: "Total = (Top + Bottom) - 1. Total = 9 + 38 - 1 = 46."
+            },
+            {
+                q: "Five girls are sitting in a row. A is to the right of B. E is to the left of B, but to the right of C. If A is to the left of D, who is sitting in the middle?",
+                options: ["A", "B", "C", "E"],
+                ans: 1,
+                explanation: "From the given info: B is left of A (BA). E is left of B but right of C (CEB). A is left of D (AD). Combining them: C - E - B - A - D. B is in the middle."
+            },
+            {
+                q: "Four friends A, B, C, and D are sitting in a row. A and B are sitting adjacent to each other. C and D are sitting adjacent to each other. D is not sitting next to A. Who is sitting next to A?",
+                options: ["B only", "B and C", "C only", "Cannot be determined"],
+                ans: 1,
+                explanation: "The possible arrangements where A,B are together and C,D are together are: ABCD, BADC, CDAB, DCBA. Since D cannot be next to A, the arrangements ABCD and DCBA are invalid. In BADC, next to A are B and C. In CDAB, next to A are D and B (invalid). Wait, C-D-A-B is invalid because D is next to A. D-C-A-B is valid. In DCAB, B and C are next to A."
+            },
+            {
+                q: "A monkey climbs a 30-meter high slippery pole. In the first minute, it climbs 3 meters, and in the next minute, it slips down 2 meters. How much time will it take to reach the top of the pole?",
+                options: ["55 minutes", "58 minutes", "60 minutes", "30 minutes"],
+                ans: 0,
+                explanation: "Every 2 minutes, the monkey effectively climbs 1 meter. To reach 27 meters, it takes 27 × 2 = 54 minutes. In the 55th minute, it climbs 3 meters, reaching exactly 30 meters and thus doesn't slip back down. Total time = 55 minutes."
+            },
+            {
+                q: "In a class of 40 students, every student plays at least one sport. 25 play Cricket, and 20 play Football. How many students play BOTH Cricket and Football?",
+                options: ["5", "10", "15", "20"],
+                ans: 0,
+                explanation: "Using the formula: Total = Cricket + Football - Both. 40 = 25 + 20 - Both. 40 = 45 - Both. Both = 45 - 40 = 5."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+        let timeLeft = 3600; // 60 minutes
+        let timerInterval;
+
+        function init() {
+            renderGrid();
+        }
+
+        function startTest() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            document.getElementById('header-timer-container').classList.remove('hidden');
+            document.getElementById('header-timer-container').classList.add('flex');
+            
+            timerInterval = setInterval(updateTimer, 1000);
+            renderQuestion(currentQuestion);
+        }
+
+        function updateTimer() {
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                executeSubmit();
+                return;
+            }
+            timeLeft--;
+            
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            
+            const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('header-timer').innerText = timeString;
+
+            if(timeLeft < 300) { // Under 5 minutes turns red
+                document.getElementById('header-timer-container').classList.remove('bg-slate-100', 'border-slate-200');
+                document.getElementById('header-timer-container').classList.add('bg-red-50', 'border-red-200');
+                document.getElementById('header-timer').classList.remove('text-slate-700');
+                document.getElementById('header-timer').classList.add('text-red-600');
+                document.querySelector('.fa-clock').classList.remove('text-sky-600');
+                document.querySelector('.fa-clock').classList.add('text-red-500');
+            }
+        }
+
+        function renderQuestion(index) {
+            const qData = quizData[index];
+            
+            document.getElementById('question-number-badge').innerText = `Question ${index + 1} of ${quizData.length}`;
+            document.getElementById('question-text').innerText = qData.q;
+            
+            const progressPercentage = ((index + 1) / quizData.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            const optionLetters = ['A', 'B', 'C', 'D'];
+            
+            qData.options.forEach((opt, optIndex) => {
+                const isSelected = userAnswers[index] === optIndex;
+                
+                const optionHtml = `
+                    <label class="option-label cursor-pointer flex items-center p-4 border rounded-xl transition-all duration-200 ${isSelected ? 'option-selected' : 'border-slate-200 bg-white hover:bg-slate-50'}" onclick="selectOption(${index}, ${optIndex})">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold mr-4 ${isSelected ? 'border-sky-600 text-sky-600 bg-white' : 'border-slate-300 text-slate-500'}">
+                            ${optionLetters[optIndex]}
+                        </div>
+                        <div class="text-slate-700 ${isSelected ? 'font-medium text-sky-900' : ''}">
+                            ${opt}
+                        </div>
+                        <div class="ml-auto flex-shrink-0">
+                            <input type="radio" name="q${index}" value="${optIndex}" class="hidden" ${isSelected ? 'checked' : ''}>
+                            <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-sky-600' : 'border-slate-300'}">
+                                ${isSelected ? '<div class="w-2.5 h-2.5 bg-sky-600 rounded-full"></div>' : ''}
+                            </div>
+                        </div>
+                    </label>
+                `;
+                optionsContainer.insertAdjacentHTML('beforeend', optionHtml);
+            });
+
+            document.getElementById('btn-prev').disabled = index === 0;
+            const btnNext = document.getElementById('btn-next');
+            
+            if (index === quizData.length - 1) {
+                btnNext.innerHTML = 'Save & Review <i class="fa-solid fa-list-check ml-2"></i>';
+                btnNext.classList.remove('bg-sky-600', 'hover:bg-sky-700');
+                btnNext.classList.add('bg-amber-500', 'hover:bg-amber-600', 'shadow-amber-200');
+            } else {
+                btnNext.innerHTML = 'Save & Next <i class="fa-solid fa-angle-right ml-2"></i>';
+                btnNext.classList.add('bg-sky-600', 'hover:bg-sky-700');
+                btnNext.classList.remove('bg-amber-500', 'hover:bg-amber-600', 'shadow-amber-200');
+            }
+
+            updateGridSelection(index);
+        }
+
+        function selectOption(qIndex, optIndex) {
+            userAnswers[qIndex] = optIndex;
+            renderQuestion(qIndex);
+            updateGridState();
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                renderQuestion(currentQuestion);
+            } else {
+                if(window.innerWidth < 768) toggleMobileGrid(true);
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion(currentQuestion);
+            }
+        }
+
+        function jumpToQuestion(index) {
+            currentQuestion = index;
+            renderQuestion(currentQuestion);
+            if(window.innerWidth < 768) toggleMobileGrid(false);
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('question-grid');
+            grid.innerHTML = '';
+            for (let i = 0; i < quizData.length; i++) {
+                grid.innerHTML += `
+                    <button onclick="jumpToQuestion(${i})" id="grid-btn-${i}" class="w-10 h-10 sm:w-11 sm:h-11 rounded-lg border border-slate-300 font-semibold text-sm flex items-center justify-center transition-all hover:bg-slate-100 text-slate-600">
+                        ${i + 1}
+                    </button>
+                `;
+            }
+            updateGridState();
+        }
+
+        function updateGridState() {
+            for (let i = 0; i < quizData.length; i++) {
+                const btn = document.getElementById(`grid-btn-${i}`);
+                if (userAnswers[i] !== null) {
+                    btn.classList.add('grid-btn-answered');
+                    btn.classList.remove('border-slate-300', 'text-slate-600', 'bg-white');
+                }
+            }
+        }
+
+        function updateGridSelection(index) {
+            for (let i = 0; i < quizData.length; i++) {
+                document.getElementById(`grid-btn-${i}`).classList.remove('grid-btn-current');
+            }
+            document.getElementById(`grid-btn-${index}`).classList.add('grid-btn-current');
+        }
+
+        function toggleMobileGrid(forceState = null) {
+            const gridContainer = document.getElementById('grid-container');
+            if(forceState === true) gridContainer.classList.remove('hidden');
+            else if (forceState === false) gridContainer.classList.add('hidden');
+            else gridContainer.classList.toggle('hidden');
+        }
+
+        function confirmSubmit() {
+            const unanswered = userAnswers.filter(a => a === null).length;
+            const modal = document.getElementById('custom-modal');
+            const desc = document.getElementById('modal-desc');
+
+            if (unanswered > 0) {
+                desc.innerHTML = `You still have <strong>${unanswered} unanswered</strong> questions. Are you sure you want to submit?`;
+            } else {
+                desc.innerHTML = "You have answered all questions. Ready to submit and see your score?";
+            }
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('modal-content').classList.remove('scale-95', 'opacity-0');
+                document.getElementById('modal-content').classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('custom-modal');
+            document.getElementById('modal-content').classList.remove('scale-100', 'opacity-100');
+            document.getElementById('modal-content').classList.add('scale-95', 'opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
+
+        function executeSubmit() {
+            clearInterval(timerInterval);
+            closeModal();
+            
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('header-timer-container').classList.add('hidden');
+            document.getElementById('results-screen').classList.remove('hidden');
+            
+            calculateAndRenderResults();
+        }
+
+        function calculateAndRenderResults() {
+            let correct = 0;
+            let incorrect = 0;
+            let skipped = 0;
+            const optionLetters = ['A', 'B', 'C', 'D'];
+
+            const reviewContainer = document.getElementById('review-container');
+            reviewContainer.innerHTML = '';
+
+            quizData.forEach((qData, index) => {
+                const userAns = userAnswers[index];
+                const isCorrect = userAns === qData.ans;
+                const isSkipped = userAns === null;
+
+                if (isCorrect) correct++;
+                else if (isSkipped) skipped++;
+                else incorrect++;
+
+                let statusBadge = '';
+                let borderClass = '';
+                
+                if (isCorrect) {
+                    statusBadge = '<span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full border border-emerald-200"><i class="fa-solid fa-check mr-1"></i> Correct (+2)</span>';
+                    borderClass = 'border-l-4 border-l-emerald-500';
+                } else if (isSkipped) {
+                    statusBadge = '<span class="px-2.5 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-full border border-slate-200"><i class="fa-solid fa-minus mr-1"></i> Skipped (0)</span>';
+                    borderClass = 'border-l-4 border-l-slate-400';
+                } else {
+                    statusBadge = '<span class="px-2.5 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full border border-red-200"><i class="fa-solid fa-xmark mr-1"></i> Incorrect (0)</span>';
+                    borderClass = 'border-l-4 border-l-red-500';
+                }
+
+                let optionsHtml = '<div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-2">';
+                qData.options.forEach((opt, optIndex) => {
+                    let optBg = 'bg-slate-50 border-slate-200';
+                    let icon = '';
+                    
+                    if (optIndex === qData.ans) {
+                        optBg = 'bg-emerald-50 border-emerald-300 text-emerald-800 font-medium shadow-sm';
+                        icon = '<i class="fa-solid fa-circle-check text-emerald-500 ml-auto"></i>';
+                    } else if (optIndex === userAns && !isCorrect) {
+                        optBg = 'bg-red-50 border-red-200 text-red-800';
+                        icon = '<i class="fa-solid fa-circle-xmark text-red-500 ml-auto"></i>';
+                    }
+
+                    optionsHtml += `
+                        <div class="p-3 border rounded-lg text-sm flex items-center ${optBg}">
+                            <span class="font-bold mr-2 opacity-70">${optionLetters[optIndex]}.</span> ${opt} ${icon}
+                        </div>
+                    `;
+                });
+                optionsHtml += '</div>';
+
+                // Explanation Block
+                const explanationHtml = `
+                    <div class="mt-4 p-4 bg-sky-50 border border-sky-100 rounded-lg text-sm text-sky-900 shadow-inner">
+                        <span class="font-bold text-sky-700 block mb-1"><i class="fa-solid fa-lightbulb mr-1"></i> Explanation:</span>
+                        <p class="text-slate-700 leading-relaxed">${qData.explanation}</p>
+                    </div>
+                `;
+
+                const cardHtml = `
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6 ${borderClass}">
+                        <div class="flex justify-between items-start mb-3 gap-4">
+                            <h4 class="font-semibold text-slate-800 text-base leading-snug"><span class="text-slate-400 mr-1">Q${index + 1}.</span> ${qData.q}</h4>
+                            <div class="flex-shrink-0">${statusBadge}</div>
+                        </div>
+                        ${optionsHtml}
+                        ${explanationHtml}
+                    </div>
+                `;
+                reviewContainer.insertAdjacentHTML('beforeend', cardHtml);
+            });
+
+            const totalScore = correct * 2;
+            animateValue("score-text", 0, totalScore, 1000);
+            
+            document.getElementById('correct-count').innerText = correct;
+            document.getElementById('incorrect-count').innerText = incorrect;
+            document.getElementById('skipped-count').innerText = skipped;
+        }
+
+        function animateValue(id, start, end, duration) {
+            if (start === end) return;
+            var range = end - start;
+            var current = start;
+            var increment = end > start ? 1 : -1;
+            var stepTime = Math.abs(Math.floor(duration / range));
+            var obj = document.getElementById(id);
+            var timer = setInterval(function() {
+                current += increment;
+                obj.innerHTML = current;
+                if (current == end) {
+                    clearInterval(timer);
+                }
+            }, stepTime);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
